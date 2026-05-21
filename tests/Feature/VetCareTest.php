@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Owner;
 use App\Models\Pet;
+use App\Models\Appointment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class VetCareTest extends TestCase
 {
@@ -406,5 +408,149 @@ class VetCareTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
     }
-}
 
+    // =========================================================
+    // FASE 4: Appointments Tests
+    // =========================================================
+
+    private function createPetWithOwner(): Pet
+    {
+        $owner = Owner::create([
+            'name'    => 'Maria Gomez',
+            'email'   => 'maria@example.com',
+            'phone'   => '555-0987',
+            'address' => 'Calle Central 789',
+        ]);
+
+        return Pet::create([
+            'owner_id'  => $owner->id,
+            'name'      => 'Fido',
+            'species'   => 'perro',
+            'breed'     => 'Pug',
+            'birthdate' => '2023-01-01',
+            'weight'    => 8.50,
+        ]);
+    }
+
+    public function test_appointments_index_is_accessible_by_all_roles(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('appointments.index'));
+        $response->assertStatus(200);
+        $response->assertViewIs('appointments.index');
+
+        $response = $this->actingAs($this->vet)->get(route('appointments.index'));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($this->recep)->get(route('appointments.index'));
+        $response->assertStatus(200);
+    }
+
+    public function test_vet_and_admin_can_create_appointment_and_it_saves_to_db(): void
+    {
+        Mail::fake();
+
+        $pet = $this->createPetWithOwner();
+
+        $appointmentData = [
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->addDays(5)->format('Y-m-d H:i:s'),
+            'reason'       => 'consulta_general',
+            'notes'        => 'Primera visita del año.',
+            'status'       => 'pendiente',
+        ];
+
+        $response = $this->actingAs($this->vet)->post(route('appointments.store'), $appointmentData);
+
+        $this->assertDatabaseHas('appointments', [
+            'pet_id'  => $pet->id,
+            'user_id' => $this->vet->id,
+            'reason'  => 'consulta_general',
+            'status'  => 'pendiente',
+        ]);
+    }
+
+    public function test_appointment_store_requires_future_date(): void
+    {
+        $pet = $this->createPetWithOwner();
+
+        $appointmentData = [
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->subDays(1)->format('Y-m-d H:i:s'), // past date
+            'reason'       => 'consulta_general',
+        ];
+
+        $response = $this->actingAs($this->vet)->post(route('appointments.store'), $appointmentData);
+        $response->assertSessionHasErrors('scheduled_at');
+    }
+
+    public function test_appointment_can_be_viewed_by_all_roles(): void
+    {
+        Mail::fake();
+        $pet = $this->createPetWithOwner();
+
+        $appointment = Appointment::create([
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->addDays(3),
+            'reason'       => 'vacunacion',
+            'status'       => 'pendiente',
+        ]);
+
+        $response = $this->actingAs($this->recep)->get(route('appointments.show', $appointment));
+        $response->assertStatus(200);
+        $response->assertViewIs('appointments.show');
+    }
+
+    public function test_appointment_status_can_be_updated(): void
+    {
+        Mail::fake();
+        $pet = $this->createPetWithOwner();
+
+        $appointment = Appointment::create([
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->addDays(3),
+            'reason'       => 'vacunacion',
+            'status'       => 'pendiente',
+        ]);
+
+        $updateData = [
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->addDays(3)->format('Y-m-d H:i:s'),
+            'reason'       => 'vacunacion',
+            'status'       => 'confirmada',
+        ];
+
+        $response = $this->actingAs($this->admin)->put(route('appointments.update', $appointment), $updateData);
+        $response->assertRedirect(route('appointments.show', $appointment));
+
+        $appointment->refresh();
+        $this->assertEquals('confirmada', $appointment->status);
+    }
+
+    public function test_appointment_can_be_deleted_by_admin_or_vet(): void
+    {
+        Mail::fake();
+        $pet = $this->createPetWithOwner();
+
+        $appointment = Appointment::create([
+            'pet_id'       => $pet->id,
+            'user_id'      => $this->vet->id,
+            'scheduled_at' => now()->addDays(5),
+            'reason'       => 'otro',
+            'status'       => 'pendiente',
+        ]);
+
+        $response = $this->actingAs($this->admin)->delete(route('appointments.destroy', $appointment));
+        $response->assertRedirect(route('appointments.index'));
+        $this->assertDatabaseMissing('appointments', ['id' => $appointment->id]);
+    }
+
+    public function test_send_appointment_reminders_artisan_command_runs_successfully(): void
+    {
+        $this->artisan('vetcare:send-reminders')->assertExitCode(0);
+    }
+}

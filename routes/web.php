@@ -5,6 +5,7 @@ use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\VaccinationController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
 
     // PDF Clinical History Export (Accessible by all roles)
     Route::get('pets/{pet}/pdf', [PetController::class, 'downloadPdf'])->name('pets.pdf');
+
+    // Phase 4: Appointments — Accessible by all roles (create/update restricted at view level for recepcionista)
+    Route::resource('appointments', AppointmentController::class);
 });
 
 require __DIR__.'/auth.php';

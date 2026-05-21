@@ -54,7 +54,7 @@ class PetController extends Controller
      */
     public function show(Pet $pet): View
     {
-        $pet->load(['owner', 'medicalRecords.veterinarian', 'vaccinations']);
+        $pet->load(['owner', 'medicalRecords.veterinarian', 'vaccinations', 'appointments.veterinarian']);
         return view('pets.show', compact('pet'));
     }
 

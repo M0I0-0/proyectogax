@@ -39,4 +39,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(MedicalRecord::class);
     }
+
+    /**
+     * Get the appointments assigned to this user (veterinarian).
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

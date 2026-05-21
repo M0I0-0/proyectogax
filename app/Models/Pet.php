@@ -37,4 +37,12 @@ class Pet extends Model
     {
         return $this->hasMany(Vaccination::class)->orderByDesc('date_applied');
     }
+
+    /**
+     * Get the appointments scheduled for this pet.
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class)->orderBy('scheduled_at');
+    }
 }

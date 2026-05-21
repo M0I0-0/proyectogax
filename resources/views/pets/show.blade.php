@@ -292,34 +292,82 @@
                     </div>
                 </div>
 
-                <!-- Appointments Placeholder (Right - col 1) -->
+                <!-- Appointments Sidebar (Right - col 1) -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-3xl p-6 border border-gray-100 dark:border-gray-800/40 relative group overflow-hidden shadow-xl">
-                        <div class="absolute top-4 right-4">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-3xs font-extrabold bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-2xs">
-                                Fase 4
-                            </span>
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800/40 relative shadow-xl">
+                        <div class="flex items-center justify-between mb-5">
+                            <div class="flex items-center gap-3">
+                                <div class="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 flex items-center justify-center text-lg">
+                                    📅
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-sm text-gray-800 dark:text-white">Agenda de Citas</h4>
+                                    <p class="text-2xs text-gray-400">Próximas visitas</p>
+                                </div>
+                            </div>
+                            @if(Auth::user()->role !== 'recepcionista')
+                                <a href="{{ route('appointments.create') }}?pet={{ $pet->id }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
-                        <div class="space-y-4">
-                            <div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl">
-                                📅
+
+                        @php
+                            $upcomingAppts = $pet->appointments->where('scheduled_at', '>=', now())->where('status', '!=', 'cancelada')->take(4);
+                        @endphp
+
+                        @if($upcomingAppts->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($upcomingAppts as $appt)
+                                    @php
+                                        $apptColors = [
+                                            'pendiente'  => 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/30',
+                                            'confirmada' => 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-800/30',
+                                            'completada' => 'bg-blue-50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-800/30',
+                                        ];
+                                        $apptBadge = [
+                                            'pendiente'  => 'text-amber-600 dark:text-amber-400',
+                                            'confirmada' => 'text-emerald-600 dark:text-emerald-400',
+                                            'completada' => 'text-blue-600 dark:text-blue-400',
+                                        ];
+                                        $apptColor = $apptColors[$appt->status] ?? 'bg-gray-50 dark:bg-gray-800 border-gray-200/60';
+                                        $apptBadgeColor = $apptBadge[$appt->status] ?? 'text-gray-500';
+                                    @endphp
+                                    <a href="{{ route('appointments.show', $appt) }}" class="block p-3 rounded-2xl border {{ $apptColor }} hover:opacity-80 transition-opacity">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <div class="text-xs font-extrabold text-gray-800 dark:text-white">
+                                                    {{ \Carbon\Carbon::parse($appt->scheduled_at)->format('d/m/Y') }}
+                                                </div>
+                                                <div class="text-2xs text-gray-500 mt-0.5">{{ \Carbon\Carbon::parse($appt->scheduled_at)->format('H:i') }} · {{ \App\Models\Appointment::$reasons[$appt->reason] ?? $appt->reason }}</div>
+                                            </div>
+                                            <span class="text-2xs font-bold {{ $apptBadgeColor }}">
+                                                {{ \App\Models\Appointment::$statuses[$appt->status] ?? $appt->status }}
+                                            </span>
+                                        </div>
+                                        <div class="text-2xs text-gray-500 mt-1">Dr. {{ $appt->veterinarian->name }}</div>
+                                    </a>
+                                @endforeach
                             </div>
-                            <div>
-                                <h4 class="font-extrabold text-base text-gray-800 dark:text-white flex items-center gap-1.5">
-                                    Agenda de Citas
-                                </h4>
-                                <p class="text-2xs text-gray-400 mt-0.5">Recordatorios Automáticos</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800/30">
+                                <a href="{{ route('appointments.index') }}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-xl transition-colors shadow-sm">
+                                    Ver todas las citas
+                                    <svg class="w-3.5 h-3.5 ms-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                </a>
                             </div>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">
-                                La gestión de turnos veterinarios, recordatorios automatizados por correo electrónico a propietarios y panel interactivo de citas estará disponible en la **Fase 4**.
-                            </p>
-                            <div class="pt-2">
-                                <span class="inline-flex items-center text-3xs font-bold text-amber-500 gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                                    Próximamente
-                                    <svg class="w-3 h-3 animate-ping" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" /></svg>
-                                </span>
+                        @else
+                            <div class="py-6 text-center">
+                                <div class="h-12 w-12 bg-gray-50 dark:bg-gray-850 text-gray-300 rounded-full flex items-center justify-center text-2xl mx-auto shadow-inner mb-3">📅</div>
+                                <p class="text-xs text-gray-500 font-medium">Sin citas próximas</p>
+                                @if(Auth::user()->role !== 'recepcionista')
+                                    <a href="{{ route('appointments.create') }}" class="mt-3 inline-flex items-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                        + Programar cita
+                                    </a>
+                                @endif
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
