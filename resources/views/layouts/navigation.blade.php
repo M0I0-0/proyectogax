@@ -26,17 +26,17 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="text-sm font-medium transition-colors">
                             {{ __('Panel Admin') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-medium transition-colors">
                             {{ __('Dueños') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors">
                             {{ __('Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Citas') }}
+                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
+                            {{ __('Citas (Próximamente)') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Historiales') }}
+                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
+                            {{ __('Historiales (Próximamente)') }}
                         </x-nav-link>
                     @endif
 
@@ -45,14 +45,14 @@
                         <x-nav-link :href="route('vet.dashboard')" :active="request()->routeIs('vet.dashboard')" class="text-sm font-medium transition-colors">
                             {{ __('Consultas Vet') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors">
                             {{ __('Mis Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Agenda Citas') }}
+                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
+                            {{ __('Agenda Citas (Próximamente)') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Historial Clínico') }}
+                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
+                            {{ __('Historial Clínico (Próximamente)') }}
                         </x-nav-link>
                     @endif
 
@@ -61,14 +61,14 @@
                         <x-nav-link :href="route('recep.dashboard')" :active="request()->routeIs('recep.dashboard')" class="text-sm font-medium transition-colors">
                             {{ __('Recepción') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Registrar Dueño') }}
+                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-medium transition-colors">
+                            {{ __('Dueños') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors">
                             {{ __('Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            {{ __('Citas') }}
+                        <x-nav-link href="#" :active="false" class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
+                            {{ __('Citas (Próximamente)') }}
                         </x-nav-link>
                     @endif
                 </div>

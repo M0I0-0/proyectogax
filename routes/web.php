@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +45,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Owners CRUD
+    Route::resource('owners', OwnerController::class);
+
+    // Pets CRUD with Soft Deletes
+    Route::get('pets/archived', [PetController::class, 'archived'])->name('pets.archived');
+    Route::post('pets/{id}/restore', [PetController::class, 'restore'])->name('pets.restore');
+    Route::delete('pets/{id}/force-delete', [PetController::class, 'forceDelete'])->name('pets.force-delete');
+    Route::resource('pets', PetController::class);
 });
 
 require __DIR__.'/auth.php';
