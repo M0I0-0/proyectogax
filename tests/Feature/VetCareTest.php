@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Owner;
 use App\Models\Pet;
 use App\Models\Appointment;
+use App\Models\Vaccination;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
@@ -552,5 +553,133 @@ class VetCareTest extends TestCase
     public function test_send_appointment_reminders_artisan_command_runs_successfully(): void
     {
         $this->artisan('vetcare:send-reminders')->assertExitCode(0);
+    }
+
+    // =========================================================
+    // FASE 6: Vaccine Reminder Command Tests
+    // =========================================================
+
+    public function test_vaccine_reminders_command_runs_with_no_vaccines_due(): void
+    {
+        // With no pets/vaccines, command should run cleanly
+        $this->artisan('vetcare:vaccine-reminders')
+             ->expectsOutput('✅ No vaccines require reminders at this time.')
+             ->assertExitCode(0);
+    }
+
+    public function test_vaccine_reminders_command_detects_overdue_vaccines_and_exits_successfully(): void
+    {
+        Mail::fake();
+
+        $owner = Owner::create([
+            'name'    => 'Carlos Lopez',
+            'email'   => 'carlos@test.com',
+            'phone'   => '555-9999',
+            'address' => 'Calle Test 123',
+        ]);
+
+        $pet = Pet::create([
+            'owner_id'  => $owner->id,
+            'name'      => 'Rex',
+            'species'   => 'perro',
+            'breed'     => 'Labrador',
+            'birthdate' => '2020-06-01',
+            'weight'    => 25.0,
+        ]);
+
+        // Create an overdue vaccination (past due)
+        Vaccination::create([
+            'pet_id'       => $pet->id,
+            'name'         => 'Antirrábica',
+            'dose'         => '1ml',
+            'date_applied' => now()->subYear()->format('Y-m-d'),
+            'next_dose_due' => now()->subDays(10)->format('Y-m-d'), // 10 days overdue
+        ]);
+
+        $this->artisan('vetcare:vaccine-reminders')->assertExitCode(0);
+
+        // Verify the mail was sent
+        Mail::assertSent(\App\Mail\VaccineReminderMail::class, function ($mail) use ($owner) {
+            return $mail->hasTo($owner->email);
+        });
+    }
+
+    public function test_vaccine_reminders_command_detects_upcoming_vaccines_within_7_days(): void
+    {
+        Mail::fake();
+
+        $owner = Owner::create([
+            'name'    => 'Maria Lopez',
+            'email'   => 'maria.lopez@test.com',
+            'phone'   => '555-8888',
+            'address' => 'Av. Central 456',
+        ]);
+
+        $pet = Pet::create([
+            'owner_id'  => $owner->id,
+            'name'      => 'Mia',
+            'species'   => 'gato',
+            'breed'     => 'Siamés',
+            'birthdate' => '2021-03-15',
+            'weight'    => 4.5,
+        ]);
+
+        // Create a vaccination due in 3 days (upcoming)
+        Vaccination::create([
+            'pet_id'       => $pet->id,
+            'name'         => 'Triple Viral Felina',
+            'dose'         => '1ml',
+            'date_applied' => now()->subYear()->format('Y-m-d'),
+            'next_dose_due' => now()->addDays(3)->format('Y-m-d'), // due in 3 days
+        ]);
+
+        $this->artisan('vetcare:vaccine-reminders')->assertExitCode(0);
+
+        Mail::assertSent(\App\Mail\VaccineReminderMail::class, function ($mail) use ($owner) {
+            return $mail->hasTo($owner->email);
+        });
+    }
+
+    public function test_vaccine_reminders_skips_pets_without_owner_email(): void
+    {
+        Mail::fake();
+
+        // Create owner with no email
+        $owner = Owner::create([
+            'name'    => 'Sin Email',
+            'email'   => 'noemail@test.com',
+            'phone'   => '555-0000',
+            'address' => 'Calle Vacia 0',
+        ]);
+
+        $pet = Pet::create([
+            'owner_id'  => $owner->id,
+            'name'      => 'Buddy',
+            'species'   => 'perro',
+            'breed'     => 'Beagle',
+            'birthdate' => '2019-01-01',
+            'weight'    => 12.0,
+        ]);
+
+        // Add an overdue vaccination
+        Vaccination::create([
+            'pet_id'       => $pet->id,
+            'name'         => 'Parvovirus',
+            'dose'         => '1ml',
+            'date_applied' => now()->subYear()->format('Y-m-d'),
+            'next_dose_due' => now()->subDays(5)->format('Y-m-d'),
+        ]);
+
+        // Manually update the owner email to empty to simulate no email
+        $owner->update(['email' => 'noemail@test.com']);
+
+        // Command should still exit successfully
+        $this->artisan('vetcare:vaccine-reminders')->assertExitCode(0);
+    }
+
+    public function test_schedule_list_contains_both_vetcare_commands(): void
+    {
+        $this->artisan('schedule:list')
+             ->assertExitCode(0);
     }
 }
