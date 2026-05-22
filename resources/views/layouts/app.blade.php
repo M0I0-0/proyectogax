@@ -21,13 +21,13 @@
         </style>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gradient-to-tr from-[#fbfaf7] via-[#f5f8f8] to-[#e6f4f2] text-gray-700">
+        <div class="min-h-screen bg-gradient-to-tr from-[#faf9ff] via-[#f5f3ff] to-[#eddffd] text-[#3b2d54]">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white/80 backdrop-blur-md border-b border-[#e2d8f7] shadow-sm">
+                    <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>

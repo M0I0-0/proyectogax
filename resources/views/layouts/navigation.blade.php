@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white/95 backdrop-blur-md border-b border-orange-100/60 sticky top-0 z-50 shadow-sm">
+<nav x-data="{ open: false }" class="bg-white/95 backdrop-blur-md border-b border-[#e2d8f7] sticky top-0 z-50 shadow-sm">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -6,11 +6,11 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
-                        <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-[#68d391] to-[#4fd1c5] flex items-center justify-center shadow-md shadow-emerald-200/50 transform group-hover:scale-105 transition-transform duration-200">
+                        <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-purple-400 to-indigo-500 flex items-center justify-center shadow-md shadow-purple-200/50 transform group-hover:scale-105 transition-transform duration-200">
                             <!-- Friendly animal paw icon -->
                             <span class="text-xl">🐾</span>
                         </div>
-                        <span class="font-extrabold text-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-600 bg-clip-text text-transparent tracking-tight">VetCare</span>
+                        <span class="font-extrabold text-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-700 bg-clip-text text-transparent tracking-tight">VetCare</span>
                     </a>
                 </div>
  
@@ -22,45 +22,45 @@
  
                     <!-- Admin Links -->
                     @if($role === 'admin')
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🏥 {{ __('Panel Admin') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             👥 {{ __('Dueños') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🐶 {{ __('Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             📅 {{ __('Citas') }}
                         </x-nav-link>
                     @endif
  
                     <!-- Veterinario Links -->
                     @if($role === 'veterinario')
-                        <x-nav-link :href="route('vet.dashboard')" :active="request()->routeIs('vet.dashboard')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('vet.dashboard')" :active="request()->routeIs('vet.dashboard')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🩺 {{ __('Consultas Vet') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🐱 {{ __('Mis Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             📅 {{ __('Agenda Citas') }}
                         </x-nav-link>
                     @endif
  
                     <!-- Recepcionista Links -->
                     @if($role === 'recepcionista')
-                        <x-nav-link :href="route('recep.dashboard')" :active="request()->routeIs('recep.dashboard')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('recep.dashboard')" :active="request()->routeIs('recep.dashboard')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🛎️ {{ __('Recepción') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             👥 {{ __('Dueños') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             🐶 {{ __('Mascotas') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-medium transition-colors hover:text-teal-600">
+                        <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')" class="text-sm font-bold transition-colors hover:text-purple-600">
                             📅 {{ __('Citas') }}
                         </x-nav-link>
                     @endif
@@ -72,18 +72,18 @@
                 <!-- Role Badge -->
                 <div class="me-3">
                     @if($role === 'admin')
-                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200/50 shadow-sm">
-                            <span class="w-2 h-2 rounded-full bg-cyan-400 me-1.5 animate-pulse"></span>
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/50 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400 me-1.5 animate-pulse"></span>
                             Administrador
                         </span>
                     @elseif($role === 'veterinario')
-                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/50 shadow-sm">
-                            <span class="w-2 h-2 rounded-full bg-indigo-400 me-1.5 animate-pulse"></span>
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/50 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-purple-400 me-1.5 animate-pulse"></span>
                             Veterinario
                         </span>
                     @else
-                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200/50 shadow-sm">
-                            <span class="w-2 h-2 rounded-full bg-teal-400 me-1.5 animate-pulse"></span>
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-200/50 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-violet-400 me-1.5 animate-pulse"></span>
                             Recepcionista
                         </span>
                     @endif
@@ -91,7 +91,7 @@
  
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-bold rounded-2xl text-gray-600 bg-orange-50/50 hover:bg-orange-50 hover:text-teal-600 focus:outline-none transition ease-in-out duration-150 border border-orange-100/30">
+                        <button class="inline-flex items-center px-4 py-2 border border-[#e2d8f7] text-sm leading-4 font-bold rounded-2xl text-purple-950 bg-purple-50/50 hover:bg-purple-50 hover:text-purple-700 focus:outline-none transition ease-in-out duration-150 shadow-2xs">
                             <div>👤 {{ Auth::user()->name }}</div>
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -121,7 +121,7 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -157,9 +157,19 @@
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
                 <div>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/20 shadow-sm capitalize">
-                        {{ $role }}
-                    </span>
+                    @if($role === 'admin')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/50 shadow-sm capitalize">
+                            {{ $role }}
+                        </span>
+                    @elseif($role === 'veterinario')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/50 shadow-sm capitalize">
+                            {{ $role }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-200/50 shadow-sm capitalize">
+                            {{ $role }}
+                        </span>
+                    @endif
                 </div>
             </div>
 
