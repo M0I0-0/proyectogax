@@ -27,6 +27,9 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Personal') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('prescriptions.create')" :active="request()->routeIs('prescriptions.*')">
+                            {{ __('Recetas') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('owners.index')" :active="request()->routeIs('owners.*')">
                             {{ __('Dueños') }}
                         </x-nav-link>
@@ -42,6 +45,9 @@
                     @if($role === 'veterinario')
                         <x-nav-link :href="route('vet.dashboard')" :active="request()->routeIs('vet.dashboard')">
                             {{ __('Consultas Vet') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('prescriptions.create')" :active="request()->routeIs('prescriptions.*')">
+                            {{ __('Recetas') }}
                         </x-nav-link>
                         <x-nav-link :href="route('pets.index')" :active="request()->routeIs('pets.*')">
                             {{ __('Mis Mascotas') }}

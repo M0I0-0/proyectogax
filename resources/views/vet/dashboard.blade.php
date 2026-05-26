@@ -38,16 +38,26 @@
             </div>
 
             <!-- Dashboard Options -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 
                 <!-- Quick Patients / Records management -->
-                <div class="bg-white rounded-[2rem] p-8 shadow-3xs border border-[#e2d8f7] space-y-6">
+                <div class="bg-white rounded-[2rem] p-8 shadow-3xs border border-[#e2d8f7] space-y-6 xl:col-span-2">
                     <h3 class="text-lg font-black text-purple-950 flex items-center gap-2">
                         <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
                         Herramientas Clínicas
                     </h3>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <a href="{{ route('prescriptions.create') }}" class="group p-5 rounded-2xl border border-purple-100/50 hover:border-purple-300 hover:bg-purple-50/40 transition-all duration-200 shadow-3xs bg-purple-50/10">
+                            <div class="h-10 w-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <svg class="h-5 w-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h4 class="font-extrabold text-purple-950 group-hover:text-purple-700 transition-colors">Nueva Receta</h4>
+                            <p class="text-xs text-gray-500 mt-1 font-semibold">Crea una receta médica seleccionando al paciente y su dueño de la lista.</p>
+                        </a>
+
                         <a href="{{ route('pets.index') }}" class="group p-5 rounded-2xl border border-purple-100/50 hover:border-indigo-300 hover:bg-indigo-50/40 transition-all duration-200 shadow-3xs">
                             <div class="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -55,7 +65,7 @@
                                 </svg>
                             </div>
                             <h4 class="font-extrabold text-purple-950 group-hover:text-indigo-700 transition-colors">Historial Médico</h4>
-                            <p class="text-xs text-gray-500 mt-1 font-semibold">Registra diagnósticos, tratamientos y recetas de consulta.</p>
+                            <p class="text-xs text-gray-500 mt-1 font-semibold">Consulta diagnósticos, tratamientos y fichas completas.</p>
                         </a>
 
                         <a href="{{ route('pets.index') }}" class="group p-5 rounded-2xl border border-purple-100/50 hover:border-purple-300 hover:bg-purple-50/40 transition-all duration-200 shadow-3xs">
@@ -65,13 +75,13 @@
                                 </svg>
                             </div>
                             <h4 class="font-extrabold text-purple-950 group-hover:text-purple-700 transition-colors">Vacunación</h4>
-                            <p class="text-xs text-gray-500 mt-1 font-semibold">Registra la aplicación de vacunas y próximas fechas sugeridas.</p>
+                            <p class="text-xs text-gray-500 mt-1 font-semibold">Consulta aplicación de vacunas y próximas fechas sugeridas.</p>
                         </a>
                     </div>
                 </div>
 
                 <!-- Next Consultations -->
-                <div class="bg-white rounded-[2rem] p-8 shadow-3xs border border-[#e2d8f7]">
+                <div class="bg-white rounded-[2rem] p-8 shadow-3xs border border-[#e2d8f7] xl:col-span-1">
                     <h3 class="text-lg font-black text-purple-950 mb-6 flex items-center gap-2">
                         <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
                         Próximas Citas Médicas
