@@ -40,4 +40,8 @@ return [
         'instance_id' => env('GREEN_API_INSTANCE_ID'),
     ],
 
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY'),
+    ],
+
 ];

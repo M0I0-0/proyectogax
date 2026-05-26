@@ -108,7 +108,7 @@ class MedicalRecordController extends Controller
             return;
         }
 
-        // --- WhatsApp Notification (UltraMsg) ---
+        // --- WhatsApp Notification (Green-API) ---
         if (!empty($owner->phone)) {
             try {
                 $ownerName = $owner->name;
@@ -117,12 +117,22 @@ class MedicalRecordController extends Controller
                 $diagnosis = $recordData['diagnosis'];
                 $treatment = $recordData['treatment'];
 
+                $friendlyExplanation = null;
+                if (config('services.groq.api_key')) {
+                    $friendlyExplanation = \App\Services\GroqService::generateFriendlyRecipe($petName, $diagnosis, $treatment);
+                }
+
                 $messageBody = "📋 *VetCare - Nueva Receta Médica* 🩺\n\n" .
                     "Hola *{$ownerName}*, te enviamos la receta del chequeo médico de *{$petName}*:\n\n" .
                     "⚖️ *Peso registrado:* {$weight} kg\n" .
                     "🩺 *Diagnóstico:* {$diagnosis}\n" .
-                    "💊 *Tratamiento / Receta:* \n{$treatment}\n\n" .
-                    "_Le deseamos una pronta recuperación a su mascota. También hemos enviado el historial clínico completo en PDF a su correo electrónico._";
+                    "💊 *Tratamiento / Receta:* \n{$treatment}\n\n";
+
+                if (!empty($friendlyExplanation)) {
+                    $messageBody .= "✨ *Explicación amigable (IA):* \n{$friendlyExplanation}\n\n";
+                }
+
+                $messageBody .= "_Le deseamos una pronta recuperación a su mascota. También hemos enviado el historial clínico completo en PDF a su correo electrónico._";
 
                 WhatsAppService::sendMessage($owner->phone, $messageBody);
             } catch (\Exception $e) {

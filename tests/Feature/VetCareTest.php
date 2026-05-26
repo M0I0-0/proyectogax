@@ -928,4 +928,89 @@ class VetCareTest extends TestCase
                 $mail->pet->id === $pet->id;
         });
     }
+
+    public function test_ai_symptom_analyzer_endpoint_returns_suggestions(): void
+    {
+        \Illuminate\Support\Facades\Http::fake([
+            'api.groq.com/*' => \Illuminate\Support\Facades\Http::response([
+                'choices' => [
+                    [
+                        'message' => [
+                            'content' => json_encode([
+                                'diagnosis' => 'Gastroenteritis infecciosa.',
+                                'treatment' => 'Administrar amoxicilina 250mg cada 12 horas por 7 días.'
+                            ])
+                        ]
+                    ]
+                ]
+            ], 200)
+        ]);
+
+        config([
+            'services.groq.api_key' => 'test_groq_key'
+        ]);
+
+        $pet = $this->createPetWithOwner();
+
+        $response = $this->actingAs($this->vet)->post(route('ai.analyze'), [
+            'symptoms' => 'Vómito y deshidratación leve.',
+            'pet_id'   => $pet->id,
+            'weight'   => 12.50
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success'   => true,
+            'diagnosis' => 'Gastroenteritis infecciosa.',
+            'treatment' => 'Administrar amoxicilina 250mg cada 12 horas por 7 días.'
+        ]);
+    }
+
+    public function test_prescription_creation_sends_whatsapp_with_ai_friendly_recipe_when_key_is_set(): void
+    {
+        Mail::fake();
+        \Illuminate\Support\Facades\Http::fake([
+            'api.green-api.com/*' => \Illuminate\Support\Facades\Http::response(['success' => true], 200),
+            'api.groq.com/*' => \Illuminate\Support\Facades\Http::response([
+                'choices' => [
+                    [
+                        'message' => [
+                            'content' => 'Tu perrito Fido tiene gripe leve, por favor dale jarabe cada 12 horas.'
+                        ]
+                    ]
+                ]
+            ], 200)
+        ]);
+
+        config([
+            'services.greenapi.token' => 'test_token',
+            'services.greenapi.instance_id' => 'instance123',
+            'services.groq.api_key' => 'test_groq_key'
+        ]);
+
+        $pet = $this->createPetWithOwner();
+
+        $recordData = [
+            'weight_at_visit' => 9.20,
+            'diagnosis' => 'Gripe leve por cambio de clima.',
+            'treatment' => 'Administrar 5ml de jarabe pediátrico.',
+        ];
+
+        $response = $this->actingAs($this->vet)->post(route('pets.medical-records.store', $pet), $recordData);
+
+        // Assert record is created
+        $this->assertDatabaseHas('medical_records', [
+            'pet_id' => $pet->id,
+            'weight_at_visit' => 9.20,
+        ]);
+
+        // Assert WhatsApp sent with AI friendly explanation
+        \Illuminate\Support\Facades\Http::assertSent(function ($request) {
+            return str_contains($request->url(), 'api.green-api.com/waInstanceinstance123/sendMessage/test_token') &&
+                $request['chatId'] === '5550987@c.us' &&
+                str_contains($request['message'], 'VetCare - Nueva Receta Médica') &&
+                str_contains($request['message'], 'Explicación amigable (IA)') &&
+                str_contains($request['message'], 'Tu perrito Fido tiene gripe leve');
+        });
+    }
 }

@@ -97,6 +97,9 @@ Route::middleware('auth')->group(function () {
         Route::post('pets/{pet}/vaccinations', [VaccinationController::class, 'store'])->name('pets.vaccinations.store');
         Route::get('prescriptions/create', [MedicalRecordController::class, 'createGeneral'])->name('prescriptions.create');
         Route::post('prescriptions', [MedicalRecordController::class, 'storeGeneral'])->name('prescriptions.store');
+        
+        // AI Assistant Route
+        Route::post('ai/analyze', [\App\Http\Controllers\AiController::class, 'analyze'])->name('ai.analyze');
     });
 
     // Phase 4: Appointments — Restricted to admin/veterinario for modification

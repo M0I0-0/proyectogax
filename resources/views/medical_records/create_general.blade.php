@@ -55,6 +55,52 @@
                         @enderror
                     </div>
 
+                    <!-- AI Assistant Section -->
+                    <div class="p-5 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-200/50 rounded-2xl space-y-3 shadow-3xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">✨</span>
+                                <div>
+                                    <h4 class="text-xs font-black text-purple-950 uppercase tracking-wider">Asistente Clínico IA (Groq)</h4>
+                                    <p class="text-3xs text-purple-700 font-bold mt-0.5">Ingresa los síntomas observados para generar sugerencias.</p>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-ai-analyze" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-black rounded-xl shadow-xs transition-all hover:scale-105" onclick="analyzeSymptoms()">
+                                <svg class="w-3.5 h-3.5 me-1.5 animate-spin hidden" id="ai-spinner" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span id="ai-btn-text">Generar Sugerencias</span>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="ai_symptoms" class="block text-3xs font-black text-purple-700/60 uppercase tracking-wider">Síntomas / Motivo de consulta</label>
+                            <input type="text" id="ai_symptoms" class="w-full px-3 py-2.5 rounded-xl border border-purple-200 bg-white text-purple-955 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-purple-400 shadow-3xs" placeholder="Ej: Vómito, letargo y falta de apetito desde hace 24 horas.">
+                        </div>
+
+                        <!-- Suggestions Output Box (Hidden by default) -->
+                        <div id="ai-suggestions-box" class="hidden p-4 bg-white border border-purple-150 rounded-xl space-y-3 mt-3 shadow-3xs">
+                            <div class="space-y-1">
+                                <span class="text-3xs font-black text-purple-700 uppercase tracking-wider block">Diagnóstico sugerido</span>
+                                <p id="ai-suggested-diagnosis" class="text-xs text-purple-955 font-semibold bg-purple-50/20 p-2.5 rounded-lg border border-purple-50/50 leading-relaxed"></p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-3xs font-black text-purple-700 uppercase tracking-wider block">Tratamiento sugerido</span>
+                                <p id="ai-suggested-treatment" class="text-xs text-purple-955 font-bold bg-amber-50/20 p-2.5 rounded-lg border border-amber-50/50 leading-relaxed"></p>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-2 border-t border-purple-50/50">
+                                <button type="button" class="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-black rounded-xl border border-purple-200/50 transition-all shadow-3xs" onclick="useAiSuggestions()">
+                                    ✍️ Usar en mi Receta
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="ai-error-box" class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl">
+                            Ocurrió un error al contactar al asistente de IA. Por favor verifica tus credenciales de Groq en el archivo .env.
+                        </div>
+                    </div>
+
                     <!-- Diagnosis -->
                     <div>
                         <label for="diagnosis" class="block text-xs font-black text-purple-950 uppercase tracking-wider mb-2">Diagnóstico y Notas Médicas</label>
@@ -90,4 +136,81 @@
             </div>
         </div>
     </div>
+
+    <!-- Groq AI Assistant Script -->
+    <script>
+        async function analyzeSymptoms() {
+            const symptomsInput = document.getElementById('ai_symptoms');
+            const spinner = document.getElementById('ai-spinner');
+            const btnText = document.getElementById('ai-btn-text');
+            const suggestionsBox = document.getElementById('ai-suggestions-box');
+            const errorBox = document.getElementById('ai-error-box');
+            const btn = document.getElementById('btn-ai-analyze');
+            const petSelect = document.getElementById('pet_id');
+
+            const symptoms = symptomsInput.value.trim();
+            if (!symptoms) {
+                alert('Por favor, ingresa los síntomas antes de analizarlos.');
+                return;
+            }
+
+            const petId = petSelect.value;
+            if (!petId) {
+                alert('Por favor, selecciona un paciente de la lista primero.');
+                return;
+            }
+
+            // Show spinner and disable button
+            spinner.classList.remove('hidden');
+            btnText.innerText = 'Analizando...';
+            btn.disabled = true;
+            suggestionsBox.classList.add('hidden');
+            errorBox.classList.add('hidden');
+
+            try {
+                const response = await fetch("{{ route('ai.analyze') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        symptoms: symptoms,
+                        pet_id: petId,
+                        weight: document.getElementById('weight_at_visit').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    document.getElementById('ai-suggested-diagnosis').innerText = data.diagnosis;
+                    document.getElementById('ai-suggested-treatment').innerText = data.treatment;
+                    suggestionsBox.classList.remove('hidden');
+                } else {
+                    errorBox.innerText = data.message || 'Error al obtener respuesta de la IA. Por favor, verifica tu GROQ_API_KEY en el archivo .env.';
+                    errorBox.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error(error);
+                errorBox.innerText = 'No se pudo conectar con el servidor. Verifica tu conexión de red o la configuración del servidor.';
+                errorBox.classList.remove('hidden');
+            } finally {
+                spinner.classList.add('hidden');
+                btnText.innerText = 'Generar Sugerencias';
+                btn.disabled = false;
+            }
+        }
+
+        function useAiSuggestions() {
+            const diagnosis = document.getElementById('ai-suggested-diagnosis').innerText;
+            const treatment = document.getElementById('ai-suggested-treatment').innerText;
+
+            document.getElementById('diagnosis').value = diagnosis;
+            document.getElementById('treatment').value = treatment;
+            
+            // Scroll down to fields
+            document.getElementById('diagnosis').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </x-app-layout>
