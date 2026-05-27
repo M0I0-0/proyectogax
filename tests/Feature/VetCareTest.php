@@ -555,6 +555,31 @@ class VetCareTest extends TestCase
         $this->artisan('vetcare:send-reminders')->assertExitCode(0);
     }
 
+    public function test_appointment_reminders_command_sends_for_appointments_scheduled_tomorrow(): void
+    {
+        Mail::fake();
+
+        $pet = $this->createPetWithOwner();
+
+        $appointment = Appointment::create([
+            'pet_id' => $pet->id,
+            'user_id' => $this->vet->id,
+            'scheduled_at' => now()->addDay()->setTime(10, 0, 0),
+            'reason' => 'consulta_general',
+            'status' => 'pendiente',
+            'reminder_sent' => false,
+        ]);
+
+        $this->artisan('vetcare:send-reminders')->assertExitCode(0);
+
+        Mail::assertSent(\App\Mail\AppointmentReminder::class, function ($mail) use ($pet) {
+            return $mail->hasTo($pet->owner->email);
+        });
+
+        $appointment->refresh();
+        $this->assertTrue($appointment->reminder_sent);
+    }
+
     // =========================================================
     // FASE 6: Vaccine Reminder Command Tests
     // =========================================================

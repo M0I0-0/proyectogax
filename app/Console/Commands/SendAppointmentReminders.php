@@ -30,10 +30,10 @@ class SendAppointmentReminders extends Command
      */
     public function handle(): int
     {
-        // Find appointments scheduled between 23 and 25 hours from now
-        // that are still pending or confirmed, and haven't received a reminder yet
-        $start = Carbon::now()->addHours(23);
-        $end   = Carbon::now()->addHours(25);
+        // Send one daily batch for all appointments happening tomorrow.
+        // This matches the scheduler configuration that runs every day at 08:00.
+        $start = Carbon::tomorrow()->startOfDay();
+        $end   = Carbon::tomorrow()->endOfDay();
 
         $appointments = Appointment::with(['pet.owner', 'veterinarian'])
             ->whereBetween('scheduled_at', [$start, $end])
